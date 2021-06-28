@@ -1,5 +1,5 @@
 import WebSocket from "ws";
-import { Config, Destructor } from './interface';
+import { Config, Destructor } from './config';
 import { handleRequest } from './request';
 
 /*
@@ -52,16 +52,4 @@ class Server<Context> {
   }
 };
 
-/*
-  Errors
-*/
-class AliasError extends Error {
-  constructor(public identifier: string, message?: string) {
-    super(message);
-    this.name = "AliasError";
-  }
-}
-
-export { Server, AliasError };
-export * from './helpers';
-export * from './interface';
+export { Server };

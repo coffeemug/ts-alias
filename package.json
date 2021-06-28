@@ -5,5 +5,10 @@
     "test": "cd integration-tests && npm test",
     "build": "scripts/build"
   },
-  "workspaces": ["client", "server", "integration-tests"]
+  "workspaces": [
+    "client",
+    "server",
+    "wire",
+    "integration-tests"
+  ]
 }

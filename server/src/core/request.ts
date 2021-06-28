@@ -1,4 +1,5 @@
-import { Config, Request, OkEvent, ErrorEvent, Status, ErrorEventBody, ResponseT } from './interface';
+import { Config, ResponseT } from './config';
+import { Request, OkEvent, ErrorEvent, Status, ErrorBody } from 'ts-alias-wire';
 
 /*
   Actual request handling (would be nice to break up this function)
@@ -17,11 +18,11 @@ export const handleRequest = async <Context>(socket: any, message: string, confi
         };
         socket.send(JSON.stringify(event));
       } else if (status == 'error') {
-        const _message: ErrorEventBody = <ErrorEventBody>message;
+        const _message: ErrorBody = <ErrorBody>message;
         const event: ErrorEvent = {
           status: "error",
           echo: request.echo,
-          message: _message,
+          error: _message,
         };
         socket.send(JSON.stringify(event));
       }
@@ -54,7 +55,7 @@ export const handleRequest = async <Context>(socket: any, message: string, confi
   // grab the requested channel
   const channel = config.channels[request.channel];
   if (!channel) {
-    const res: ErrorEventBody = {
+    const res: ErrorBody = {
       identifier: 'unknown_call',
     };
     emit('error', res);

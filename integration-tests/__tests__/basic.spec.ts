@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import WS from 'ws';
-import { Server, AliasError } from 'ts-alias-server/';
+import { Server, AliasError } from 'ts-alias-server';
 import { fromRpc, OnRpcFn, fromChannel, OnChannelFn } from 'ts-alias-server';
 import { RpcClient } from 'ts-alias-client';
 

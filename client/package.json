@@ -10,7 +10,8 @@
   "dependencies": {
     "json-stable-stringify": "^1.0.1",
     "multimap": "^1.1.0",
-    "reconnecting-websocket": "^4.4.0"
+    "reconnecting-websocket": "^4.4.0",
+    "ts-alias-wire": "^0.0.0"
   },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.32",

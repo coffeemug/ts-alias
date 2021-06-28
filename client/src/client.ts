@@ -1,6 +1,7 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
+import { EventMsg, ErrorBody } from 'ts-alias-wire';
 
 export class AliasError extends Error {
   constructor(public identifier: string, message?: string) {
@@ -148,7 +149,7 @@ class RpcClient<Context> {
 /*
   Helper interfaces
 */
-type OnErrorFn = (err: ServerError) => unknown;
+type OnErrorFn = (err: ErrorBody) => unknown;
 type OnMessagesFn = (msgs: unknown) => unknown;
 
 type WatchConn = {
@@ -165,31 +166,19 @@ type DoWatch = {
   onMessages: OnMessagesFn,
 };
 
-type ServerResponse = {
-  echo: number,
-  status: "ok" | "error",
-  message: unknown,
-};
-
-export type ServerError = {
-  identifier: string,
-  message?: string,
-}
-
 /*
   Helper functions
 */
-const onMessage = (obj: ServerResponse, watchConns: WatchConns) => {
+const onMessage = (obj: EventMsg, watchConns: WatchConns) => {
   const requestId = obj.echo;
-  const events = obj.message;
 
   const watchConn = watchConns.get(requestId);
   if (watchConn) {
     const { onMessages, onError } = watchConn;
     if (obj.status == 'ok') {
-      onMessages && onMessages(events);
+      onMessages && onMessages(obj.message);
     } else {
-      const serverError = <ServerError>events;
+      const serverError = obj.error;
       onError && onError(serverError);
     }
   } else {

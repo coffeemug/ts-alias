@@ -1,0 +1,16 @@
+{
+  "name": "ts-alias-wire",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Vyacheslav Akhmechet <coffeemug@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "dist/wire.js",
+  "types": "dist/wire.d.ts",
+  "dependencies": {
+    "io-ts": "^2.2.16"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.4"
+  }
+}

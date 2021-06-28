@@ -1,25 +1,25 @@
 import { isLeft } from 'fp-ts/Either';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/PathReporter'
-import { OnSubscribeFn, Subscription, Destructor, ErrorEventBody } from './interface';
-import { AliasError } from './server';
+import { ConnectFn, Channel, Destructor } from './core/config';
+import { ErrorBody } from 'ts-alias-wire';
 
 /*
   Type safe channels
 */
 export type OnChannelFn<ArgsT extends t.Mixed, Context> =
-  (controls: Subscription, args: ArgsT, context: Context)
+  (controls: Channel, args: ArgsT, context: Context)
     => Promise<Destructor | void>;
 
 export const fromChannel =
   <ArgsT extends t.Mixed, Context>
-  (argsType: ArgsT, channel: OnChannelFn<ArgsT, Context>): OnSubscribeFn<Context> =>
+  (argsType: ArgsT, channel: OnChannelFn<ArgsT, Context>): ConnectFn<Context> =>
 {
-  const onSubscribe: OnSubscribeFn<Context> = async ({emit}, args, context, _) => {
+  const onSubscribe: ConnectFn<Context> = async ({emit}, args, context, _) => {
     const decoded = argsType.decode(args);
     if (isLeft(decoded)) {
       const parseErrors = PathReporter.report(decoded);
-      const res: ErrorEventBody = {
+      const res: ErrorBody = {
         identifier: 'bad_arguments',
         message: JSON.stringify(parseErrors, null, 2),
       };
@@ -31,13 +31,13 @@ export const fromChannel =
       return await channel({emit}, <t.TypeOf<ArgsT>>decoded.right, context);
     } catch (err: any) {
       if (err instanceof AliasError) {
-        const res: ErrorEventBody = {
+        const res: ErrorBody = {
           identifier: err.identifier,
           message: err.message,
         }
         emit('error', res);
       } else {
-        const res: ErrorEventBody = {
+        const res: ErrorBody = {
           identifier: 'internal_server_error',
           message: err.toString(),
         }
@@ -57,7 +57,7 @@ export type OnRpcFn<ArgsT extends t.Mixed, Context> =
 export const fromRpc =
     <ArgsT extends t.Mixed, Context>
     (argsType: ArgsT, onRpc: OnRpcFn<t.TypeOf<ArgsT>, Context>)
-    : OnSubscribeFn<Context> =>
+    : ConnectFn<Context> =>
 {
   const onSubscribe = fromChannel<ArgsT, Context>(argsType, async ({emit}, args, context) => {
     const response = await onRpc(args, context);
@@ -67,7 +67,11 @@ export const fromRpc =
 }
 
 /*
-TODO:
-- wrap everything in `t.exact` to avoid accidentally
-  leaking information
+  Errors
 */
+export class AliasError extends Error {
+  constructor(public identifier: string, message?: string) {
+    super(message);
+    this.name = "AliasError";
+  }
+}

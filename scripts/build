@@ -1,3 +1,4 @@
 #! /bin/bash
-cd ./client && npx tsc
+cd ./wire && npx tsc
+cd ../client && npx tsc
 cd ../server && npx tsc
