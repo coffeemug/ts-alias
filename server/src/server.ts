@@ -64,3 +64,4 @@ class AliasError extends Error {
 
 export { Server, AliasError };
 export * from './helpers';
+export * from './interface';
