@@ -1,0 +1,9 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "test": "cd integration-tests && npm test",
+    "build": "scripts/build"
+  },
+  "workspaces": ["client", "server", "integration-tests"]
+}
