@@ -19,16 +19,16 @@ export const _channel =
 /*
   Type safe RPC calls
 */
-export type RpcFn<ArgsT extends t.Mixed, Context> =
-  (args: ArgsT, context: Context) => unknown | Promise<unknown>;
+export type RpcFn<Context, ArgsT extends t.Mixed, RetT> =
+  (args: ArgsT, context: Context) => RetT | Promise<RetT>;
 
 export const _rpc =
-  <Context, ArgsT extends t.Mixed>(
+  <Context, ArgsT extends t.Mixed, RpcT extends RpcFn<Context, ArgsT, ReturnType<RpcT>>>(
     argsType: ArgsT,
-    cb: RpcFn<t.TypeOf<ArgsT>, Context>
+    cb: RpcT,
   ) : ChannelSpec<Context, ArgsT, Event> =>
 {
-  const onSubscribe = _channel<Context, ReturnType<typeof cb>, ArgsT>(argsType, async ({emit}, args, context) => {
+  const onSubscribe = _channel<Context, ReturnType<RpcT>, ArgsT>(argsType, async ({emit}, args, context) => {
     try {
       const response = await cb(args, context);
       emit('ok', response);

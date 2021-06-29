@@ -8,8 +8,8 @@ import { RpcClient } from 'ts-alias-client';
   Type safe rpc calls
 */
 type Context = void;
-const rpc = <ArgsT extends t.Mixed>(argsT: ArgsT, onRpc: RpcFn<t.TypeOf<ArgsT>, Context>) => _rpc<Context, ArgsT>(argsT, onRpc);
 const channel = <ArgsT extends t.Mixed, Event>(args: ArgsT, onChannel: ConnectFn<Context, t.TypeOf<ArgsT>, Event>) => _channel(args, onChannel);
+const rpc = <ArgsT extends t.Mixed, RpcT extends RpcFn<Context, t.TypeOf<ArgsT>, ReturnType<RpcT>>>(argsT: ArgsT, cb: RpcT) => _rpc<Context, ArgsT, RpcT>(argsT, cb);
 
 /*
   Test a call
@@ -95,6 +95,7 @@ test('', async () => {
   Setup and teardown boilerplate
 */
 const channels = { div, raise, triple };
+
 let server: Server<Context, typeof channels>;
 let client: RpcClient<Context>;
 beforeAll(() => {

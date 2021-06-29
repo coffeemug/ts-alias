@@ -30,10 +30,10 @@ export type ConnectFn<Context, ArgT, Event> = (
   ) => Promise<Destructor | void>;
 
 // Channel interface
-export interface Channel<OkBody> {
+export interface Channel<Event> {
   emit: <statusT extends Status>(
       status: statusT,
-      response: ResponseT<OkBody>[statusT]
+      response: ResponseT<Event>[statusT]
     ) => void;
 }
 
