@@ -33,7 +33,7 @@ test('', async () => {
   Bad arguments
 */
 test('', async () => {
-  await expect(client.call("div", {}))
+  await expect(client.call("div", {} as any))
     .rejects
     .toThrowError(
       new AliasError("bad_arguments",
@@ -48,7 +48,7 @@ test('', async () => {
   Unknown call
 */
 test('', async () => {
-  await expect(client.call("foo", {}))
+  await expect(client.call("does_not_exist" as any, {}))
     .rejects
     .toThrowError(
       new AliasError("unknown_call"));
@@ -66,11 +66,6 @@ test('', async () => {
     .rejects
     .toThrowError(
       new AliasError("go_fuck_yourself1", "raising a `go_fuck_yourself` error"));
-});
-
-test('', async () => {
-  const x = await client.call("raise", {}, { silent: true });
-  expect(x).toBe(undefined);
 });
 
 /*
@@ -98,7 +93,7 @@ test('', async () => {
 const channels = { div, raise, triple };
 
 let server: Server<Context, typeof channels>;
-let client: RpcClient<Context>;
+let client: RpcClient<typeof channels>;
 beforeAll(() => {
   // start the server
   server = new Server<Context, typeof channels>({
@@ -109,7 +104,7 @@ beforeAll(() => {
   server.start();
 
   // connect
-  client = new RpcClient({
+  client = new RpcClient<typeof channels>({
     WebSocket: WS,
     url: "ws://localhost:443",
     onContext: () => {}

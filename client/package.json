@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.32",
     "@types/multimap": "^1.1.2",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.4",
+    "io-ts": "^2.2.14"
   }
 }

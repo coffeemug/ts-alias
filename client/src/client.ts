@@ -1,25 +1,24 @@
+import * as t from 'io-ts';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
-import { AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec } from 'ts-alias-protocol';
+import { AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec, ChannelSpec } from 'ts-alias-protocol';
 
-export type OnContextFn<Context> = () => Promise<Context> | Context;
-
-export interface Config<Context> {
-  onContext: OnContextFn<Context>,
+export interface Config {
+  onContext: ContextFn,
   url: string,
   WebSocket?: unknown,
 }
 
-class RpcClient<Context> {
+class RpcClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
   wsc: ReconnectingWebSocket;
-  onContext: OnContextFn<Context>;
+  onContext: ContextFn;
   requestId: number;
-  watchArgs: Multimap<string, DoWatch>;
-  watchConns: WatchConns;
+  watchArgs: Multimap<SpecName<SpecT>, DoWatch<SpecT>>;
+  watchConns: WatchedConns;
   openp: boolean;
 
-  constructor(public config: Config<Context>) {
+  constructor(public config: Config) {
     this.wsc = new ReconnectingWebSocket(config.url, [], {
       maxEnqueuedMessages: 0,
       startClosed: true,
@@ -56,7 +55,9 @@ class RpcClient<Context> {
     this.wsc.close();
   }
 
-  async call(rpcName: string, rpcArgs: unknown, opts?: { silent?: boolean }) {
+  async call<Name extends SpecName<SpecT>>(rpcName: Name, rpcArgs: SpecArgs<SpecT, Name>)
+    : Promise<SpecRet<SpecT, Name>>
+  {
     type StopWatch = () => void;
     type Ref = {
       timeoutId: null | ReturnType<typeof setTimeout>,
@@ -68,19 +69,15 @@ class RpcClient<Context> {
       stopWatch: null,
     };
 
-    const p = new Promise((resolve, reject) => {
+    const p = new Promise<SpecRet<SpecT, Name>>((resolve, reject) => {
       ref.stopWatch = that.watch(
         rpcName, rpcArgs,
         (err) => {
           ref.timeoutId && clearTimeout(ref.timeoutId);
           ref.stopWatch && ref.stopWatch();
-          if (opts?.silent) {
-            resolve(undefined);
-          } else {
-            reject(new AliasError(err.identifier, err.message));
-          }
+          reject(new AliasError(err.identifier, err.message));
         },
-        (value: unknown) => {
+        (value: SpecRet<SpecT, Name>) => {
           ref.timeoutId && clearTimeout(ref.timeoutId);
           ref.stopWatch && ref.stopWatch();
           resolve(value);
@@ -90,18 +87,14 @@ class RpcClient<Context> {
       // in case a watch times out
       ref.timeoutId = setTimeout(() => {
         ref.stopWatch && ref.stopWatch();
-        if(opts?.silent) {
-          resolve(undefined);
-        } else {
-          reject(new AliasError("timeout", "Request timed out"));
-        }
+        reject(new AliasError("timeout", "Request timed out"));
       }, 3000);
     });
 
     return await p;
   }
 
-  watch(rpcName: string, rpcArgs: unknown, onError: OnErrorFn, onMessages: OnMessagesFn) {
+  watch<Name extends SpecName<SpecT>>(rpcName: Name, rpcArgs: SpecArgs<SpecT, Name>, onError: ErrorFn, onMessages: MessagesFn<SpecRet<SpecT, Name>>) {
     const key = computeKey(rpcName, rpcArgs);
     const obj = { rpcName, rpcArgs, onError, onMessages };
 
@@ -113,7 +106,7 @@ class RpcClient<Context> {
     };
   }
 
-  doWatch({ rpcName, rpcArgs, onError, onMessages }: DoWatch) {
+  doWatch({ rpcName, rpcArgs, onError, onMessages }: DoWatch<SpecT>) {
     if (!this.openp) {
       return () => {};
     }
@@ -121,7 +114,7 @@ class RpcClient<Context> {
     const [wsc, requestId, watchConns] = [this.wsc, this.requestId, this.watchConns];
     this.requestId++;
 
-    watchConns.set(requestId, { onMessages, onError });
+    watchConns.set(requestId, { onMessages: onMessages as any, onError });
 
     Promise.resolve(this.onContext()).then((rpcContext) => {
       const request = JSON.stringify({
@@ -142,27 +135,33 @@ class RpcClient<Context> {
 /*
   Helper interfaces
 */
-type OnErrorFn = (err: ErrorBody) => unknown;
-type OnMessagesFn = (msgs: unknown) => unknown;
+type ContextFn = () => Promise<unknown> | unknown;
+
+type ErrorFn = (err: ErrorBody) => void;
+type MessagesFn<Event> = (msgs: Event) => void;
 
 type WatchConn = {
-  onError: OnErrorFn,
-  onMessages: OnMessagesFn,
+  onError: ErrorFn,
+  onMessages: MessagesFn<unknown>,
 };
 
-type WatchConns = Map<number, WatchConn>;
+type WatchedConns = Map<number, WatchConn>;
 
-type DoWatch = {
-  rpcName: string,
-  rpcArgs: unknown,
-  onError: OnErrorFn,
-  onMessages: OnMessagesFn,
+type DoWatch<SpecT> = {
+  rpcName: SpecName<SpecT>,
+  rpcArgs: SpecArgs<SpecT, SpecName<SpecT>>,
+  onError: ErrorFn,
+  onMessages: MessagesFn<SpecRet<SpecT, SpecName<SpecT>>>,
 };
+
+type SpecName<SpecT> = keyof SpecT & string;
+type SpecArgs<SpecT, Name extends SpecName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer ArgSpecT, infer _B> ? t.TypeOf<ArgSpecT> : never;
+type SpecRet<SpecT, Name extends SpecName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer _B, infer RetT> ? RetT : never;
 
 /*
   Helper functions
 */
-const onMessage = (obj: EventMsg, watchConns: WatchConns) => {
+const onMessage = (obj: EventMsg, watchConns: WatchedConns) => {
   const requestId = obj.echo;
 
   const watchConn = watchConns.get(requestId);

@@ -23,7 +23,7 @@ export const _rpc =
   <Context, ArgsT extends t.Mixed, RpcT extends RpcFn<Context, ArgsT, ReturnType<RpcT>>>(
     argsType: ArgsT,
     cb: RpcT,
-  ) : ChannelSpec<Context, ArgsT, Event> =>
+  ) : ChannelSpec<Context, ArgsT, ReturnType<RpcT>> =>
 {
   const onSubscribe = _channel<Context, ReturnType<RpcT>, ArgsT>(argsType, async ({emit}, args, context) => {
     try {
