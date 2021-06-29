@@ -1,7 +1,7 @@
 import { isLeft } from 'fp-ts/Either';
 import { PathReporter } from 'io-ts/PathReporter'
-import { Config, ServerBaseSpec } from './config';
-import { Request, OkEvent, ErrorEvent, Status, ErrorBody } from 'ts-alias-wire';
+import { ServerBaseSpec, Request, OkEvent, ErrorEvent, Status, ErrorBody } from 'ts-alias-protocol';
+import { Config } from './config';
 
 /*
   Actual request handling (would be nice to break up this function)

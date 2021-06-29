@@ -1,5 +1,6 @@
 import WebSocket from "ws";
-import { Config, ServerBaseSpec, Destructor } from './config';
+import { ServerBaseSpec, Destructor } from 'ts-alias-protocol';
+import { Config } from './config';
 import { handleRequest } from './request';
 
 /*

@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
-import { EventMsg, ErrorBody } from 'ts-alias-wire';
+import { EventMsg, ErrorBody } from 'ts-alias-protocol';
 
 export class AliasError extends Error {
   constructor(public identifier: string, message?: string) {

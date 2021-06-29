@@ -11,7 +11,7 @@
     "fp-ts": "^2.10.5",
     "io-ts": "^2.2.16",
     "ws": "^7.5.0",
-    "ts-alias-wire": "^0.0.0"
+    "ts-alias-protocol": "^0.0.0"
   },
   "devDependencies": {
     "@types/node": "^15.12.5",

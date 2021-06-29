@@ -8,7 +8,7 @@
   "workspaces": [
     "client",
     "server",
-    "wire",
+    "protocol",
     "integration-tests"
   ]
 }

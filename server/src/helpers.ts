@@ -1,8 +1,5 @@
 import * as t from 'io-ts';
-import { isLeft } from 'fp-ts/Either';
-import { PathReporter } from 'io-ts/PathReporter'
-import { ConnectFn, Channel, ChannelSpec, Destructor } from './core/config';
-import { ErrorBody } from 'ts-alias-wire';
+import { ConnectFn, ChannelSpec, ErrorBody } from 'ts-alias-protocol';
 
 /*
   Type safe channels
