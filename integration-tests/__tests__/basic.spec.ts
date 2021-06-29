@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import WS from 'ws';
 import { Server } from 'ts-alias-server';
-import { _rpc, RpcFn, _channel } from 'ts-alias-server';
+import { _rpc, _channel } from 'ts-alias-server';
 import { AliasError, ConnectFn } from 'ts-alias-protocol';
 import { RpcClient } from 'ts-alias-client';
 
@@ -9,8 +9,8 @@ import { RpcClient } from 'ts-alias-client';
   Type safe rpc calls
 */
 type Context = void;
-const channel = <ArgsT extends t.Mixed, Event>(args: ArgsT, onChannel: ConnectFn<Context, t.TypeOf<ArgsT>, Event>) => _channel(args, onChannel);
-const rpc = <ArgsT extends t.Mixed, RpcT extends RpcFn<Context, t.TypeOf<ArgsT>, ReturnType<RpcT>>>(argsT: ArgsT, cb: RpcT) => _rpc<Context, ArgsT, RpcT>(argsT, cb);
+const channel = _channel<Context>();
+const rpc = _rpc<Context>();
 
 /*
   Test a call
