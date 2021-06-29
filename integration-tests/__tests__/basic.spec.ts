@@ -1,15 +1,15 @@
 import * as t from 'io-ts';
 import WS from 'ws';
 import { Server, AliasError } from 'ts-alias-server';
-import { fromRpc, OnRpcFn, fromChannel, OnChannelFn } from 'ts-alias-server';
+import { _rpc, RpcFn, _channel, ConnectFn } from 'ts-alias-server';
 import { RpcClient } from 'ts-alias-client';
 
 /*
   Type safe rpc calls
 */
 type Context = void;
-const rpc = <ArgsT extends t.Mixed>(argsT: ArgsT, onRpc: OnRpcFn<t.TypeOf<ArgsT>, Context>) => fromRpc(argsT, onRpc);
-const channel = <ArgsT extends t.Mixed>(args: ArgsT, onChannel: OnChannelFn<t.TypeOf<ArgsT>, Context>) => fromChannel(args, onChannel);
+const rpc = <ArgsT extends t.Mixed>(argsT: ArgsT, onRpc: RpcFn<t.TypeOf<ArgsT>, Context>) => _rpc<Context, ArgsT>(argsT, onRpc);
+const channel = <ArgsT extends t.Mixed, Event>(args: ArgsT, onChannel: ConnectFn<Context, t.TypeOf<ArgsT>, Event>) => _channel(args, onChannel);
 
 /*
   Test a call
@@ -73,14 +73,33 @@ test('', async () => {
 });
 
 /*
+  Test a channel
+*/
+const triple = channel<typeof t.number, number>(t.number, async ({ emit }, args, _) => {
+  emit("ok", args * 3);
+});
+
+test('', async () => {
+  const x = await client.call("triple", 7);
+  expect(x).toBe(21);
+});
+
+test('', async () => {
+  const x = await new Promise((resolve, reject) => {
+    client.watch("triple", 7, reject, resolve);
+  });
+  expect(x).toBe(21);
+});
+
+/*
   Setup and teardown boilerplate
 */
-const channels = { div, raise };
-let server: Server<Context>;
+const channels = { div, raise, triple };
+let server: Server<Context, typeof channels>;
 let client: RpcClient<Context>;
 beforeAll(() => {
   // start the server
-  server = new Server<Context>({
+  server = new Server<Context, typeof channels>({
     onContext: () => {},
     channels,
     port: 443,

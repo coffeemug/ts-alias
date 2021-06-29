@@ -1,13 +1,13 @@
 import WebSocket from "ws";
-import { Config, Destructor } from './config';
+import { Config, ServerBaseSpec, Destructor } from './config';
 import { handleRequest } from './request';
 
 /*
   Server code
 */
-class Server<Context> {
+class Server<Context, SpecT extends ServerBaseSpec> {
   wss?: WebSocket.Server;
-  constructor(public config: Config<Context>) {
+  constructor(public config: Config<Context, SpecT>) {
   }
 
   async start() {
