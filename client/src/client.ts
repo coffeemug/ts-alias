@@ -1,14 +1,7 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
-import { EventMsg, ErrorBody } from 'ts-alias-protocol';
-
-export class AliasError extends Error {
-  constructor(public identifier: string, message?: string) {
-    super(message);
-    this.name = "AliasError";
-  }
-}
+import { AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec } from 'ts-alias-protocol';
 
 export type OnContextFn<Context> = () => Promise<Context> | Context;
 

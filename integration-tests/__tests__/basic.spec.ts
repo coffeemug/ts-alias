@@ -1,7 +1,8 @@
 import * as t from 'io-ts';
 import WS from 'ws';
-import { Server, AliasError } from 'ts-alias-server';
-import { _rpc, RpcFn, _channel, ConnectFn } from 'ts-alias-server';
+import { Server } from 'ts-alias-server';
+import { _rpc, RpcFn, _channel } from 'ts-alias-server';
+import { AliasError, ConnectFn } from 'ts-alias-protocol';
 import { RpcClient } from 'ts-alias-client';
 
 /*

@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { ConnectFn, ChannelSpec, ErrorBody } from 'ts-alias-protocol';
+import { ConnectFn, ChannelSpec, ErrorBody, AliasError } from 'ts-alias-protocol';
 
 /*
   Type safe channels
@@ -44,12 +44,3 @@ export const _rpc =
   return onSubscribe;
 }
 
-/*
-  Errors
-*/
-export class AliasError extends Error {
-  constructor(public identifier: string, message?: string) {
-    super(message);
-    this.name = "AliasError";
-  }
-}
