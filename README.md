@@ -1,6 +1,8 @@
 # TLDR
 
-Adding API endpoints takes a lot more time than writing functions, which in turn makes programming modern apps slow and frustrating. This project includes a server and client libraries that make it dramatically easier to do client-server communication.
+`ts-alias` is a simple, typesafe alternative to REST/GraphQL for extremely rapid app prototyping.
+
+Adding API endpoints takes a lot more time than writing functions, which in turn makes programming modern apps slow and frustrating. `ts-alias` includes client and server libraries that make it dramatically easier to do typesafe client-server communication.
 
 On the server:
 
