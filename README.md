@@ -16,7 +16,7 @@ On the client:
 
 ```ts
 const m = await client.call("square", 5);
-assert(m == 5);
+assert(m == 25);
 ```
 
 Everything is typechecked. When you type `await client.call("sq...` on the client, you get autocompletion with all available rpc calls, and the client knows the expected argument type and the return type. Attempting to make a non-existing rpc call, passing an argument of the wrong type, or expecting the wrong return type will not type check.
@@ -38,9 +38,10 @@ npm i ts-alias-server io-ts
 Then, add the following snippet to your utilities file somewhere in your project. (Typescript doesn't yet support partial type argument inference, and I haven't figured out how to avoid this step without this feature. Fortunately, you do this once per project and forget about it.)
 
 ```ts
-import { _rpc } from 'ts-alias-server';
+import { _channel, _rpc } from 'ts-alias-server';
 
 export type Context = void;
+export const channel = _channel<Context>();
 export const rpc = _rpc<Context>();
 ```
 
