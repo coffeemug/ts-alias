@@ -182,4 +182,4 @@ const computeKey = (rpcName: string, rpcArgs: unknown) => {
   return stringify([rpcName, rpcArgs]);
 }
 
-export { AliasClient };
+export { AliasClient, AliasError };
