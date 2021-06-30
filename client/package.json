@@ -1,6 +1,6 @@
 {
   "name": "ts-alias-client",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "> TODO: description",
   "author": "Vyacheslav Akhmechet <coffeemug@gmail.com>",
   "homepage": "",
@@ -11,12 +11,13 @@
     "json-stable-stringify": "^1.0.1",
     "multimap": "^1.1.0",
     "reconnecting-websocket": "^4.4.0",
-    "ts-alias-protocol": "^0.1.0"
+    "ts-alias-protocol": "^0.1.0",
+    "fp-ts": "^2.10.5",
+    "io-ts": "^2.2.14"
   },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.32",
     "@types/multimap": "^1.1.2",
-    "typescript": "^4.3.4",
-    "io-ts": "^2.2.14"
+    "typescript": "^4.3.4"
   }
 }

@@ -91,15 +91,15 @@ Now install the `ts-alias-client` library in your frontend project:
 npm i ts-alias-client
 ```
 
-Now create a client connection like this:
+Create a client connection like this:
 
 ```ts
 import { RpcClient } from 'ts-alias-client';
-import type { calls } from './server.ts';
+import type { channels } from './server.ts';
 
-const client = new RpcClient<calls>({
+const client = new RpcClient<channels>({
   url: "ws://localhost:443",
-  onContext: () => {}
+  onContext: () => {},
   WebSocket,
 });
 ```
