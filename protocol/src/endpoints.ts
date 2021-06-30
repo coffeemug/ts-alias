@@ -15,6 +15,11 @@ export type ChannelSpec<Context, ArgSpecT extends t.Mixed, Event> = {
   onConnect: ConnectFn<Context, t.TypeOf<ArgSpecT>, Event>
 }
 
+// Helper types to detruct the spec/channel spec
+export type ChannelName<SpecT> = keyof SpecT & string;
+export type ChannelArgT<SpecT, Name extends ChannelName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer ArgSpecT, infer _B> ? t.TypeOf<ArgSpecT> : never;
+export type ChannelRetT<SpecT, Name extends ChannelName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer _B, infer RetT> ? RetT : never;
+
 // New connection
 export type ConnectFn<Context, ArgT, Event> = (
     controls: Channel<Event>,

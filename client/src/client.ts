@@ -2,7 +2,10 @@ import * as t from 'io-ts';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
-import { AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec, ChannelSpec } from 'ts-alias-protocol';
+import {
+  AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec, ChannelSpec,
+  ChannelName, ChannelArgT, ChannelRetT
+} from 'ts-alias-protocol';
 
 export interface Config {
   onContext: ContextFn,
@@ -14,7 +17,7 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
   wsc: ReconnectingWebSocket;
   onContext: ContextFn;
   requestId: number;
-  watchArgs: Multimap<SpecName<SpecT>, DoWatch<SpecT>>;
+  watchArgs: Multimap<ChannelName<SpecT>, DoWatch<SpecT>>;
   watchConns: WatchedConns;
   openp: boolean;
 
@@ -55,8 +58,8 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
     this.wsc.close();
   }
 
-  async call<Name extends SpecName<SpecT>>(rpcName: Name, rpcArgs: SpecArgs<SpecT, Name>)
-    : Promise<SpecRet<SpecT, Name>>
+  async call<Name extends ChannelName<SpecT>>(rpcName: Name, rpcArgs: ChannelArgT<SpecT, Name>)
+    : Promise<ChannelRetT<SpecT, Name>>
   {
     type StopWatch = () => void;
     type Ref = {
@@ -69,7 +72,7 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
       stopWatch: null,
     };
 
-    const p = new Promise<SpecRet<SpecT, Name>>((resolve, reject) => {
+    const p = new Promise<ChannelRetT<SpecT, Name>>((resolve, reject) => {
       ref.stopWatch = that.watch(
         rpcName, rpcArgs,
         (err) => {
@@ -77,7 +80,7 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
           ref.stopWatch && ref.stopWatch();
           reject(new AliasError(err.identifier, err.message));
         },
-        (value: SpecRet<SpecT, Name>) => {
+        (value: ChannelRetT<SpecT, Name>) => {
           ref.timeoutId && clearTimeout(ref.timeoutId);
           ref.stopWatch && ref.stopWatch();
           resolve(value);
@@ -94,7 +97,7 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
     return await p;
   }
 
-  watch<Name extends SpecName<SpecT>>(rpcName: Name, rpcArgs: SpecArgs<SpecT, Name>, onError: ErrorFn, onMessages: MessagesFn<SpecRet<SpecT, Name>>) {
+  watch<Name extends ChannelName<SpecT>>(rpcName: Name, rpcArgs: ChannelArgT<SpecT, Name>, onError: ErrorFn, onMessages: MessagesFn<ChannelRetT<SpecT, Name>>) {
     const key = computeKey(rpcName, rpcArgs);
     const obj = { rpcName, rpcArgs, onError, onMessages };
 
@@ -147,15 +150,11 @@ type WatchConn = {
 type WatchedConns = Map<number, WatchConn>;
 
 type DoWatch<SpecT> = {
-  rpcName: SpecName<SpecT>,
-  rpcArgs: SpecArgs<SpecT, SpecName<SpecT>>,
+  rpcName: ChannelName<SpecT>,
+  rpcArgs: ChannelArgT<SpecT, ChannelName<SpecT>>,
   onError: ErrorFn,
-  onMessages: MessagesFn<SpecRet<SpecT, SpecName<SpecT>>>,
+  onMessages: MessagesFn<ChannelRetT<SpecT, ChannelName<SpecT>>>,
 };
-
-type SpecName<SpecT> = keyof SpecT & string;
-type SpecArgs<SpecT, Name extends SpecName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer ArgSpecT, infer _B> ? t.TypeOf<ArgSpecT> : never;
-type SpecRet<SpecT, Name extends SpecName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer _B, infer RetT> ? RetT : never;
 
 /*
   Helper functions
