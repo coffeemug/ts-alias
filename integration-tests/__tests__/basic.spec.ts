@@ -51,7 +51,7 @@ test('', async () => {
   await expect(client.call("does_not_exist" as any, {}))
     .rejects
     .toThrowError(
-      new AliasError("unknown_call"));
+      new AliasError("unknown_call", "call to undefined channel does_not_exist"));
 });
 
 /*

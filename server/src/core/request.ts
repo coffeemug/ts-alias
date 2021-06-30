@@ -59,6 +59,7 @@ export const handleRequest = async <Context, SpecT extends ServerBaseSpec>(socke
   if (!channel) {
     const res: ErrorBody = {
       identifier: 'unknown_call',
+      message: `call to undefined channel ${request.channel}`
     };
     emit('error', res);
     return;
