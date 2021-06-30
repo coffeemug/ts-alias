@@ -87,7 +87,7 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
       // in case a watch times out
       ref.timeoutId = setTimeout(() => {
         ref.stopWatch && ref.stopWatch();
-        reject(new AliasError("timeout", "Request timed out"));
+        reject(new AliasError("timeout", `Request ${rpcName} timed out`));
       }, 3000);
     });
 
