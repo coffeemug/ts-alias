@@ -180,5 +180,3 @@ const server = new AliasServer<Context, channels>({
 });
 ```
 
-# FAQ
-
