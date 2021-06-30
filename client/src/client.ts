@@ -135,10 +135,9 @@ class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
 /*
   Helper interfaces
 */
-type ContextFn = () => Promise<unknown> | unknown;
-
-type ErrorFn = (err: ErrorBody) => void;
-type MessagesFn<Event> = (msgs: Event) => void;
+export type ContextFn = () => Promise<unknown> | unknown;
+export type ErrorFn = (err: ErrorBody) => void;
+export type MessagesFn<Event> = (msgs: Event) => void;
 
 type WatchConn = {
   onError: ErrorFn,
