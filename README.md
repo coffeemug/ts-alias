@@ -21,7 +21,7 @@ assert(m == 25);
 
 Everything is typechecked. When you type `await client.call("sq...` on the client, you get autocompletion with all available rpc calls, and the client knows the expected argument type and the return type. Attempting to make a non-existing rpc call, passing an argument of the wrong type, or expecting the wrong return type will not type check.
 
-This makes programming client-server communication on typescript feel as easy and solid as a functional call. It's a delightful way to program.
+This makes programming client-server communication in typescript feel as easy and solid as a functional call. It's a delightful way to program.
 
 # Installation and setup details
 
@@ -137,5 +137,48 @@ Again, everything is type checked. If you replace `console.log` with your own fu
 
 # Context
 
+It's often useful for the client to pass some information to the server and for the server to do some processing on every request. For example, the client may want to pass a user token and the server may want to validate the token before executing the request. You can do it with `ts-alias` using the `context` primitive.
 
+Client configuration accepts the `onContext` field, which expects a function of no arguments that returns any serializable type. Above, we passed a function that returns nothing. Here is how you can construct a client to send some context information to the server:
+
+```ts
+const client = new AliasClient<channels>({
+  url: "ws://localhost:443",
+  onContext: () => "USER_TOKEN_GOES_HERE",
+  WebSocket,
+});
+```
+
+Recall that we've constructed the Alias server like this:
+
+```ts
+export type Context = void;
+export const channel = _channel<Context>();
+export const rpc = _rpc<Context>();
+
+const server = new AliasServer<Context, channels>({
+  channels,
+  port: 443,
+  onContext: () => {},
+});
+```
+
+For every request, the server-side `onContext` function gets called with the context information sent from the client as the only argument, and is expected to transform it into a value of type `Context`. We've constructed the server with `Context` set to `void`, but we might want to, e.g. convert the user token sent from the client into a full-fledged user object.
+
+To do that you'd construct the server like this:
+
+```ts
+export type Context = SomeUserObjectType;
+
+const server = new AliasServer<Context, channels>({
+  channels,
+  port: 443,
+  onContext: (userToken: unknown) => {
+    const user: SomeUserObjectType = lookupUser(userToken);
+    return user;
+  },
+});
+```
+
+# FAQ
 
