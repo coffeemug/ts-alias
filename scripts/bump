@@ -1,0 +1,4 @@
+#! /bin/bash
+cd ./protocol && npm version patch
+cd ../client && npm version patch
+cd ../server && npm version patch

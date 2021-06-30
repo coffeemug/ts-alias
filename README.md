@@ -32,7 +32,7 @@ I deliberately avoided setup details in the `TLDR` section to give you a sense o
 First, install the `ts-alias-server` library in your backend project:
 
 ```sh
-npm i ts-alias-server
+npm i ts-alias-server io-ts
 ```
 
 Then, add the following snippet to your utilities file somewhere in your project. (Typescript doesn't yet support partial type argument inference, and I haven't figured out how to avoid this step without this feature. Fortunately, you do this once per project and forget about it.)
@@ -68,11 +68,13 @@ const div = rpc(DivArgs, (args, _): number => {
 Finally, let's pull these together and start the server:
 
 ```ts
-const calls = { square, div };
-export type calls = typeof calls;
+import { Server } from 'ts-alias-server';
 
-const server = new Server<Context, calls>({
-  calls,
+const channels = { square, div };
+export type channels = typeof channels;
+
+const server = new Server<Context, channels>({
+  channels,
   port: 443,
   onContext: () => {},
 });

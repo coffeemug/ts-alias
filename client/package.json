@@ -1,6 +1,6 @@
 {
   "name": "ts-alias-client",
-  "version": "0.0.0",
+  "version": "0.1.2",
   "description": "> TODO: description",
   "author": "Vyacheslav Akhmechet <coffeemug@gmail.com>",
   "homepage": "",
@@ -11,7 +11,7 @@
     "json-stable-stringify": "^1.0.1",
     "multimap": "^1.1.0",
     "reconnecting-websocket": "^4.4.0",
-    "ts-alias-protocol": "^0.0.0"
+    "ts-alias-protocol": "^0.1.0"
   },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.32",

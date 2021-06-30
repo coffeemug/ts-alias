@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "test": "cd integration-tests && npm test",
-    "build": "scripts/build"
+    "build": "scripts/build",
+    "bump": "scripts/bump",
+    "publish": "scripts/publish"
   },
   "workspaces": [
     "client",

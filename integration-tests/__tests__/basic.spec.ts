@@ -2,7 +2,7 @@ import * as t from 'io-ts';
 import WS from 'ws';
 import { Server } from 'ts-alias-server';
 import { _rpc, _channel } from 'ts-alias-server';
-import { AliasError, ConnectFn } from 'ts-alias-protocol';
+import { AliasError } from 'ts-alias-protocol';
 import { RpcClient } from 'ts-alias-client';
 
 /*

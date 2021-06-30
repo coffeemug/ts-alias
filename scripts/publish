@@ -1,0 +1,4 @@
+#! /bin/bash
+cd ./protocol && npm publish
+cd ../client && npm publish
+cd ../server && npm publish
