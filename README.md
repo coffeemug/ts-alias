@@ -68,12 +68,12 @@ const div = rpc(DivArgs, (args, _): number => {
 Finally, let's pull these together and start the server:
 
 ```ts
-import { Server } from 'ts-alias-server';
+import { AliasServer } from 'ts-alias-server';
 
 const channels = { square, div };
 export type channels = typeof channels;
 
-const server = new Server<Context, channels>({
+const server = new AliasServer<Context, channels>({
   channels,
   port: 443,
   onContext: () => {},
@@ -94,10 +94,10 @@ npm i ts-alias-client
 Create a client connection like this:
 
 ```ts
-import { RpcClient } from 'ts-alias-client';
-import type { channels } from './server.ts';
+import { AliasClient } from 'ts-alias-client';
+import type { channels } from './SERVER_PROJECT/TYPE_DEFINITIONS.ts';
 
-const client = new RpcClient<channels>({
+const client = new AliasClient<channels>({
   url: "ws://localhost:443",
   onContext: () => {},
   WebSocket,

@@ -1,9 +1,9 @@
 import * as t from 'io-ts';
 import WS from 'ws';
-import { Server } from 'ts-alias-server';
-import { _rpc, _channel } from 'ts-alias-server';
+import { AliasClient } from 'ts-alias-client';
+import { AliasServer } from 'ts-alias-server';
 import { AliasError } from 'ts-alias-protocol';
-import { RpcClient } from 'ts-alias-client';
+import { _rpc, _channel } from 'ts-alias-server';
 
 /*
   Type safe rpc calls
@@ -92,11 +92,11 @@ test('', async () => {
 */
 const channels = { div, raise, triple };
 
-let server: Server<Context, typeof channels>;
-let client: RpcClient<typeof channels>;
+let server: AliasServer<Context, typeof channels>;
+let client: AliasClient<typeof channels>;
 beforeAll(() => {
   // start the server
-  server = new Server<Context, typeof channels>({
+  server = new AliasServer<Context, typeof channels>({
     onContext: () => {},
     channels,
     port: 443,
@@ -104,7 +104,7 @@ beforeAll(() => {
   server.start();
 
   // connect
-  client = new RpcClient<typeof channels>({
+  client = new AliasClient<typeof channels>({
     WebSocket: WS,
     url: "ws://localhost:443",
     onContext: () => {}

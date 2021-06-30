@@ -6,7 +6,7 @@ import { handleRequest } from './request';
 /*
   Server code
 */
-class Server<Context, SpecT extends ServerBaseSpec> {
+class AliasServer<Context, SpecT extends ServerBaseSpec> {
   wss?: WebSocket.Server;
   constructor(public config: Config<Context, SpecT>) {
   }
@@ -53,4 +53,4 @@ class Server<Context, SpecT extends ServerBaseSpec> {
   }
 };
 
-export { Server };
+export { AliasServer };

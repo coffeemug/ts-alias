@@ -10,7 +10,7 @@ export interface Config {
   WebSocket?: unknown,
 }
 
-class RpcClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
+class AliasClient<SpecT extends ServerBaseSpec & ServerSpec<any, SpecT>> {
   wsc: ReconnectingWebSocket;
   onContext: ContextFn;
   requestId: number;
@@ -182,4 +182,4 @@ const computeKey = (rpcName: string, rpcArgs: unknown) => {
   return stringify([rpcName, rpcArgs]);
 }
 
-export { RpcClient };
+export { AliasClient };
