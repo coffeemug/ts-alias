@@ -112,7 +112,29 @@ const k = await client.call("div", { num: 30, den: 6 });
 
 # Channels
 
+The Alias server and client are built on websockets, so the protocol supports push communication from the server to the client. This is done via a primitive called a `channel`. In fact, the `rpc` interface above is syntactic sugar built on channels-- an rpc call opens a channel, listens for a single message, and ends. To send messages from the server to the client (e.g. to do push notifications), you can use the underlying channel primitive directly.
+
+On the server:
+
+```ts
+const EmptyArg = t.type({});
+const counter = channel<typeof EmptyArg, number>(EmptyArg, async ({ emit }) => {
+  let x = 0;
+  setInterval(() => {
+    emit("ok", x++);
+  }, 1000);
+});
+```
+
+When a client connects to this channel, it will start receiving monotonically increasing numbers, starting with zero, from the server. Here is how you connect on the client side:
+
+```ts
+client.watch("counter", {}, console.error, console.log);
+```
+
+Again, everything is type checked. If you replace `console.log` with your own function, the type checker will ensure it can accept an argument of type `number`. You will get a type error if it can't. 
+
 # Context
 
-# FAQ
+
 
