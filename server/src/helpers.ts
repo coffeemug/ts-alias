@@ -23,7 +23,7 @@ export const _rpc = <Context>() =>
   <ArgsT extends t.Mixed, RpcT extends RpcFn<Context, t.TypeOf<ArgsT>, ReturnType<RpcT>>>(
     argsType: ArgsT,
     cb: RpcT,
-  ) : ChannelSpec<Context, ArgsT, ReturnType<RpcT>> =>
+  ) : ChannelSpec<Context, ArgsT, Unpromisify<ReturnType<RpcT>>> =>
 {
   const onSubscribe = _channel<Context>()<ArgsT, ReturnType<RpcT>>(argsType, async ({emit}, args, context) => {
     try {
@@ -44,3 +44,4 @@ export const _rpc = <Context>() =>
   return onSubscribe;
 }
 
+type Unpromisify<T> = T extends Promise<infer K> ? K : T;
