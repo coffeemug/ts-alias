@@ -16,5 +16,5 @@ type UndefinedPropertyNames<T> = {
 // Autocompletion for complex types can suck. These utilities are
 // hacks that tend to make it much better.
 export type Expand<T> =
-  T extends (unknown | any) ? T :
+  unknown extends T ? T :
     (T extends infer O ? { [K in keyof O]: O[K] } : never);
