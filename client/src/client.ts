@@ -1,9 +1,9 @@
-import * as t from 'io-ts';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import stringify from 'json-stable-stringify';
 import Multimap from 'multimap';
-import {
-  AliasError, EventMsg, ErrorBody, ServerSpec, ServerBaseSpec, ChannelSpec,
+import { AliasError } from 'ts-alias-protocol';
+import type {
+  EventMsg, ErrorBody, ServerSpec, ServerBaseSpec,
   ChannelName, ChannelArgT, ChannelRetT
 } from 'ts-alias-protocol';
 
