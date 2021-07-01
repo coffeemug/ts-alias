@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { Status, Request, ErrorBody } from './wire';
+import type { OnlyRequired } from './utils';
 
 /*
   Endpoints spec
@@ -17,7 +18,7 @@ export type ChannelSpec<Context, ArgSpecT extends t.Mixed, Event> = {
 
 // Helper types to detruct the spec/channel spec
 export type ChannelName<SpecT> = keyof SpecT & string;
-export type ChannelArgT<SpecT, Name extends ChannelName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer ArgSpecT, infer _B> ? t.TypeOf<ArgSpecT> : never;
+export type ChannelArgT<SpecT, Name extends ChannelName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer ArgSpecT, infer _B> ? OnlyRequired<t.TypeOf<ArgSpecT>> : never;
 export type ChannelRetT<SpecT, Name extends ChannelName<SpecT>> = SpecT[Name] extends ChannelSpec<infer _A, infer _B, infer RetT> ? RetT : never;
 
 // New connection

@@ -88,9 +88,38 @@ test('', async () => {
 });
 
 /*
+  Optional argument fields
+*/
+const Incr = t.type({
+  num: t.number,
+  incr: t.union([t.number, t.undefined]),
+});
+
+const incr = rpc(Incr, (args, _): number => {
+  return args.num + (args.incr || 1);
+});
+
+test('', async () => {
+  let x = await client.call("incr", { num: 10, incr: 3 });
+  expect(x).toBe(13);
+
+  x = await client.call("incr", { num: 10 });
+  expect(x).toBe(11);
+});
+
+type x = {
+  i: number | undefined,
+  j?: number
+}
+
+const y: x = {
+  i: 4
+};
+
+/*
   Setup and teardown boilerplate
 */
-const channels = { div, raise, triple };
+const channels = { div, raise, triple, incr };
 
 let server: AliasServer<Context, typeof channels>;
 let client: AliasClient<typeof channels>;
