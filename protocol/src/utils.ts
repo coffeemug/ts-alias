@@ -1,6 +1,9 @@
 
 // Typescript doesn't treat `T | undefined` properties as optional
-export type OnlyRequired<T> = Pick<T, NonUndefinedPropertyNames<T>> & Partial<Pick<T, UndefinedPropertyNames<T>>>
+export type OnlyRequired<T> =
+  T extends Record<any, any> ?
+    (Pick<T, NonUndefinedPropertyNames<T>>
+      & Partial<Pick<T, UndefinedPropertyNames<T>>>) : T;
 
 type NonUndefinedPropertyNames<T> = {
   [K in keyof T]: undefined extends T[K] ? never : K
