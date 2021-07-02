@@ -1,9 +1,9 @@
 {
   "name": "ts-alias-client",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "> TODO: description",
   "author": "Vyacheslav Akhmechet <coffeemug@gmail.com>",
-  "homepage": "",
+  "homepage": "https://github.com/coffeemug/ts-alias",
   "license": "ISC",
   "main": "dist/client.js",
   "types": "dist/client.d.ts",
